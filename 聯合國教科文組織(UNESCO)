@@ -2,8 +2,13 @@ import time as t
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import googletrans 
+import translate 
 
-title, publisher, link, date = [], [], [], []
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate = [], [], [], [], []
 
 if t.localtime()[1] < 10:
     time = ('0' + str(t.localtime()[1]) + '/' + str(t.localtime()[2]-1) + '/' + str(t.localtime()[0]))
@@ -19,5 +24,9 @@ for news in soup.findAll('div',{'class' : 'col-lg-4 col-md-4 col-sm-6 col-xs-12'
         link.append(news.article.a['href'])
         date.append(news.span.text)
         publisher.append('聯合國教科文組織(UNESCO)')
+        try:
+            translate.append(translator_a.translate(news.h4.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.h4.text))
         
-result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":"", "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
