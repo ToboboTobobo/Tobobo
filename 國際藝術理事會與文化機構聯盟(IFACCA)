@@ -1,0 +1,35 @@
+#國際藝術理事會與文化機構聯盟(IFACCA)
+import time as t
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import googletrans 
+import translate 
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate, nation = [], [], [], [], [], []
+time = (str(int(t.strftime('%d'))-1) + ' ' + t.strftime('%b %Y'))
+
+url = 'https://ifacca.org/en/news/'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+for news in soup.findAll('div',{'class' : 'news-block news-block-item col-xs-6'}):
+    if news.find('span' , {'class' : 'date-n-place d-block'}).text.split(', ')[1] == time:
+        link.append('https://ifacca.org' + news.a['href'])
+        date.append(news.find('span' , {'class' : 'date-n-place d-block'}).text.split(', ')[1])
+        nation.append(news.find('span' , {'class' : 'date-n-place d-block'}).text.split(', ')[2])
+        publisher.append('國際藝術理事會與文化機構聯盟(IFACCA)' + news.find('span' , {'class' : 'date-n-place d-block'}).text.split(', ')[0])
+        
+        url2 = ('https://ifacca.org' + news.a['href'])
+        re2 = requests.get(url2)
+        soup2 = BeautifulSoup(re2.text, 'html.parser')
+        title.append(soup2.find('p' , {'class' : 'news-header'}).text)
+        try:
+            translate.append(translator_a.translate(soup2.find('p' , {'class' : 'news-header'}).text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(nsoup2.find('p' , {'class' : 'news-header'}).text))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":nation, "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
