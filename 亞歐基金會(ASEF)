@@ -1,0 +1,29 @@
+import time as t
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import googletrans 
+import translate 
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate =[], [], [], [], []
+time = (str(int(t.strftime('%d'))-1) + ' ' + t.strftime('%b %Y'))
+
+url = 'https://www.asef.org/press/press-releases'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+for news in soup.findAll('li',{'class' : 'doc-link doc-link-pdf'}):
+    if news.find('p' , {'class' : 'note'}).text[0:11] == time:
+        link.append('https://www.asef.org' + news.a['href'])
+        date.append(news.find('p' , {'class' : 'note'}).text[0:11])
+        publisher.append('亞歐基金會(ASEF)' + news.p.a.text)
+        title.append(news.a.text)
+        try:
+            translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a.text))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
