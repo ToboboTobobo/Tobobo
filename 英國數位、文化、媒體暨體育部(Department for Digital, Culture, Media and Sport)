@@ -1,0 +1,30 @@
+import time as t
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import googletrans 
+import translate 
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate =[], [], [], [], []
+time = "2 June 2020"
+
+url = 'https://www.gov.uk/search/news-and-communications?organisations%5B%5D=department-for-digital-culture-media-sport&parent=department-for-digital-culture-media-sport'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+for news in soup.findAll('li',{'class' : 'gem-c-document-list__item'}):
+    if news.time.text == time:
+        link.append('https://www.gov.uk' + news.a['href'])
+        date.append(news.time.text)
+        publisher.append('英國數位、文化、媒體暨體育部(Department for Digital, Culture, Media and Sport)')
+        title.append(news.a.text + " / " + news.p.text)
+        title_trans = (news.a.text + " / " + news.p.text)
+        try:
+            translate.append(translator_a.translate(title_trans, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(title_trans))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
