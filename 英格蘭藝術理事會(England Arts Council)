@@ -1,0 +1,40 @@
+import time as t
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import googletrans 
+import translate 
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate =[], [], [], [], []
+time = '26 May 2020'
+
+url = 'https://www.artscouncil.org.uk/news/explore-news'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+news = soup.find('div',{'class' : 'views-row views-row-1 views-row-odd views-row-first'})
+if news.find('span',{'class' : 'listing-date'}).text == time:
+    link.append('https://www.artscouncil.org.uk' + news.a['href'])
+    date.append(news.find('span',{'class' : 'listing-date'}).text)
+    publisher.append('英格蘭藝術理事會(England Arts Council)')
+    title.append(news.h3.a.text)
+    try:
+        translate.append(translator_a.translate(news.h3.a.text, dest = "zh-tw").text)
+    except:
+        translate.append(translator_b.translate(news.h3.a.text))
+        
+news = soup.find('div',{'class' : 'views-row views-row-2 views-row-even'})
+if news.find('span',{'class' : 'listing-date'}).text == time:
+    link.append('https://www.artscouncil.org.uk' + news.a['href'])
+    date.append(news.find('span',{'class' : 'listing-date'}).text)
+    publisher.append('英格蘭藝術理事會(England Arts Council)')
+    title.append(news.h3.a.text)
+    try:
+        translate.append(translator_a.translate(news.h3.a.text, dest = "zh-tw").text)
+    except:
+        translate.append(translator_b.translate(news.h3.a.text))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
