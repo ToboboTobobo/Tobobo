@@ -1,0 +1,37 @@
+import time as t
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import googletrans 
+import translate 
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate =[], [], [], [], []
+if t.localtime()[1] < 10:
+    time = ('0' + str(t.localtime()[2]-1) + '.' + str(t.localtime()[1]) + '.' + str(t.localtime()[0]))
+    if (t.localtime()[2]-1) < 10:
+        time = ('0' + str(t.localtime()[2]-1) + '.' + '0' + str(t.localtime()[1]) + '.' + str(t.localtime()[0]))
+elif  t.localtime()[1] >= 10 and (t.localtime()[2]-1) < 10:
+    time = (str(t.localtime()[2]-1) + '.' + '0' + str(t.localtime()[1]) + '.' + str(t.localtime()[0]))
+else:
+    time = (str(t.localtime()[2]-1) + '.' + str(t.localtime()[1]) + '.' + str(t.localtime()[0]))
+
+url = 'https://www.ifa.de/en/press/#section1'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+for news in soup.findAll('div',{'class' : 'news__teaser'}):
+    if news.find('span', {'class' : 'news__date'}).text[17:27] == time:
+        link.append('https://www.ifa.de' + news.a['href'])
+        date.append(news.find('span', {'class' : 'news__date'}).text[17:27])
+        publisher.append('對外文化關係學院(IFA)')
+        title.append(news.a['title'] + " / " + news.p.text)
+        title_trans = (news.a['title'] + " / " + news.p.text)
+        try:
+            translate.append(translator_a.translate(title_trans, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(title_trans))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
