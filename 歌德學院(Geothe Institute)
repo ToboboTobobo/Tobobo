@@ -1,0 +1,36 @@
+import time as t
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import googletrans 
+import translate 
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate =[], [], [], [], []
+if t.localtime()[1] < 10:
+    time = ('0' + str(t.localtime()[2]-1) + '.' + str(t.localtime()[1]) + '.' + str(t.localtime()[0]))
+    if (t.localtime()[2]-1) < 10:
+        time = ('0' + str(t.localtime()[2]-1) + '.' + '0' + str(t.localtime()[1]) + '.' + str(t.localtime()[0]))
+elif  t.localtime()[1] >= 10 and (t.localtime()[2]-1) < 10:
+    time = (str(t.localtime()[2]-1) + '.' + '0' + str(t.localtime()[1]) + '.' + str(t.localtime()[0]))
+else:
+    time = (str(t.localtime()[2]-1) + '.' + str(t.localtime()[1]) + '.' + str(t.localtime()[0]))
+
+url = 'https://www.goethe.de/de/uun/prs.html'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+for news in soup.findAll('a', {'target' : '_self'}):
+    if news.text[0:10] == time:
+        link.append('https://www.goethe.de/' + news['href'][5:])
+        date.append(news.text[0:10])
+        publisher.append('歌德學院(Geothe Institute)')
+        title.append(news.text[12:])
+        try:
+            translate.append(translator_a.translate(news.text[12:], dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.text[12:]))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
