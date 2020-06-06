@@ -1,0 +1,40 @@
+import time as t
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import googletrans 
+import translate 
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate = [], [], [], [], []
+time = (t.strftime('%B') + ' ' + str(int(t.strftime('%d'))-1) + ', ' + t.strftime('%Y'))
+
+url = 'https://www.arts.gov/news/archives'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+news = soup.find('div',{'class' : 'views-row views-row-1 views-row-odd views-row-first'})
+if news.find('div',{'class' : 'field field-name-post-date field-type-ds field-label-hidden'}).text == time:
+    link.append('https://www.arts.gov/news/archives' + news.a['href'])
+    date.append(news.find('div',{'class' : 'field field-name-post-date field-type-ds field-label-hidden'}).text)
+    publisher.append('美國藝術贊助基金會(National Endowment for Arts)')
+    title.append(news.a.text)
+    try:
+        translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+    except:
+        translate.append(translator_b.translate(news.a.text))
+        
+news = soup.find('div',{'class' : 'views-row views-row-2 views-row-even'})
+if news.find('div',{'class' : 'field field-name-post-date field-type-ds field-label-hidden'}).text == time:
+    link.append('https://www.arts.gov/news/archives' + news.a['href'])
+    date.append(news.find('div',{'class' : 'field field-name-post-date field-type-ds field-label-hidden'}).text)
+    publisher.append('美國藝術贊助基金會(National Endowment for Arts)')
+    title.append(news.a.text)
+    try:
+        translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+    except:
+        translate.append(translator_b.translate(news.a.text))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
