@@ -1,0 +1,54 @@
+import time as t
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import googletrans 
+import translate 
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+title, publisher, link, date, translate, topic =[], [], [], [], [], []
+if t.localtime()[1] < 10:
+    time = ('0' + str(t.localtime()[2]-1) + '/' + str(t.localtime()[1]) + '/' + str(t.localtime()[0]))
+    if (t.localtime()[2]-1) < 10:
+        time = ('0' + str(t.localtime()[2]-1) + '/' + '0' + str(t.localtime()[1]) + '/' + str(t.localtime()[0]))
+elif  t.localtime()[1] >= 10 and (t.localtime()[2]-1) < 10:
+    time = (str(t.localtime()[2]-1) + '/' + '0' + str(t.localtime()[1]) + '/' + str(t.localtime()[0]))
+else:
+    time = (str(t.localtime()[2]-1) + '/' + str(t.localtime()[1]) + '/' + str(t.localtime()[0]))
+
+url = 'https://www.if.institutfrancais.com/en/actualites-if'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+for news in soup.findAll('article',{'class' : 'node node--type-actualite-if-pro-reseau node--promoted node--view-mode-listing-grande-image'}):
+    url1 = news.a['href']
+    re1 = requests.get(url1)
+    soup1 = BeautifulSoup(re1.text, 'html.parser')
+    if soup1.find('div' , {'class' : 'date'}).text[11:] == time:
+        link.append(news.a['href'])
+        date.append(soup1.find('div' , {'class' : 'date'}).text[11:])
+        publisher.append('法國藝文推廣總會(Institut Francais)')
+        topic.append(news.find('div' , {'class' : 'field field--name-field-thematiques field--type-entity-reference field--label-hidden field__items'}).text[1:-1])
+        title.append(news.a['title'])
+        try:
+            translate.append(translator_a.translate(news.a['title'], dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a['title']))
+for news in soup.findAll('article',{'class' : 'node node--type-actualite-if-pro-reseau node--promoted node--view-mode-listing-petite-image'}):
+    url2 = news.a['href']
+    re2 = requests.get(url2)
+    soup2 = BeautifulSoup(re2.text, 'html.parser')
+    if soup2.find('div' , {'class' : 'date'}).text[11:] == time:
+        link.append(news.a['href'])
+        date.append(soup2.find('div' , {'class' : 'date'}).text[11:])
+        publisher.append('法國藝文推廣總會(Institut Francais)')
+        topic.append(news.find('div' , {'class' : 'field field--name-field-thematiques field--type-entity-reference field--label-hidden field__items'}).text[1:-1])
+        title.append(news.a['title'])
+        try:
+            translate.append(translator_a.translate(news.a['title'], dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a['title']))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":topic, "發佈機構/來源":publisher, "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
