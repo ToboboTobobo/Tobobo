@@ -577,5 +577,222 @@ for i in soup.find_all("time"):
 result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":f"{now.year}/{now.month}/{now.day}", "新聞日期":f"{yesterday.year}/{yesterday.month}/{yesterday.day}", "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":"Ministère de la Culture", "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
 result = result.append(result1 , ignore_index=True)
 
+#西澳地方政府體育與文化產業部門(Department of Local Government, Sport and Cultural Industries, Government of Western Australia)
+title, link, date, translate = [], [], [], []
+time = (t.strftime('%b') + ' ' + str(int(t.strftime('%d'))-1) + ', ' + t.strftime('%Y'))
+
+url = 'https://www.dlgsc.wa.gov.au/department/news'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+for news in soup.findAll('div',{'class' : 'sf_colsIn sf_4cols_1in_25'}):
+    if news.find('span' , {'class' : 'text-muted'}).text[11:22] == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'text-muted'}).text[11:22])
+        title.append(news.a.text)
+        try:
+            translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a.text))
+for news in soup.findAll('div',{'class' : 'sf_colsIn sf_4cols_2in_25'}):
+    if news.find('span' , {'class' : 'text-muted'}).text[11:22] == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'text-muted'}).text[11:22])
+        title.append(news.a.text)
+        try:
+            translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a.text))
+for news in soup.findAll('div',{'class' : 'sf_colsIn sf_4cols_3in_25'}):
+    if news.find('span' , {'class' : 'text-muted'}).text[11:22] == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'text-muted'}).text[11:22])
+        title.append(news.a.text)
+        try:
+            translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a.text))
+for news in soup.findAll('div',{'class' : 'sf_colsIn sf_4cols_4in_25'}):
+    if news.find('span' , {'class' : 'text-muted'}).text[11:22] == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'text-muted'}).text[11:22])
+        title.append(news.a.text)
+        try:
+            translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a.text))
+for news in soup.findAll('div',{'class' : 'sf_colsIn sf_4cols_5in_25'}):
+    if news.find('span' , {'class' : 'text-muted'}).text[11:22] == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'text-muted'}).text[11:22])
+        title.append(news.a.text)
+        try:
+            translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a.text))
+for news in soup.findAll('div',{'class' : 'sf_colsIn sf_4cols_6in_25'}):
+    if news.find('span' , {'class' : 'text-muted'}).text[11:22] == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'text-muted'}).text[11:22])
+        title.append(news.a.text)
+        try:
+            translate.append(translator_a.translate(news.a.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.a.text))
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":"西澳地方政府體育與文化產業部門(Department of Local Government, Sport and Cultural Industries, Government of Western Australia)", "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
+result = result.append(result1 , ignore_index=True)
+
+#印度文化部(Ministry of Culture, Government of India)
+title, link, date, translate = [], [], [], []
+url = 'http://www.indiaculture.nic.in/press-release'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+time = (t.strftime('%B') + ' ' + str(int(t.strftime('%d'))-1) + ', ' + t.strftime('%Y'))
+
+for news in soup.findAll('div' , {'class' : 'views-row views-row-1 views-row-odd views-row-first'}):
+    if news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1] == time:
+        try:
+            link.append(news.a['href'])
+        except:
+            link.append("N/A")
+        date.append(news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1])
+        title.append(news.find('span' , {'class' : 'circularsTab'}).text)
+        try:
+            translate.append(translator_a.translate(news.find('span' , {'class' : 'circularsTab'}).text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.find('span' , {'class' : 'circularsTab'}).text))
+for news in soup.findAll('div' , {'class' : 'views-row views-row-2 views-row-even'}):
+    if news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1] == time:
+        try:
+            link.append(news.a['href'])
+        except:
+            link.append("N/A")
+        date.append(news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1])
+        title.append(news.find('span' , {'class' : 'circularsTab'}).text)
+        try:
+            translate.append(translator_a.translate(news.find('span' , {'class' : 'circularsTab'}).text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.find('span' , {'class' : 'circularsTab'}).text))
+for news in soup.findAll('div' , {'class' : 'views-row views-row-3 views-row-odd'}):
+    if news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1] == time:
+        try:
+            link.append(news.a['href'])
+        except:
+            link.append("N/A")
+        date.append(news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1])
+        title.append(news.find('span' , {'class' : 'circularsTab'}).text)
+        try:
+            translate.append(translator_a.translate(news.find('span' , {'class' : 'circularsTab'}).text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.find('span' , {'class' : 'circularsTab'}).text))
+for news in soup.findAll('div' , {'class' : 'views-row views-row-4 views-row-even'}):
+    if news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1] == time:
+        try:
+            link.append(news.a['href'])
+        except:
+            link.append("N/A")
+        date.append(news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1])
+        title.append(news.find('span' , {'class' : 'circularsTab'}).text)
+        try:
+            translate.append(translator_a.translate(news.find('span' , {'class' : 'circularsTab'}).text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.find('span' , {'class' : 'circularsTab'}).text))
+for news in soup.findAll('div' , {'class' : 'views-row views-row-5 views-row-odd'}):
+    if news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1] == time:
+        try:
+            link.append(news.a['href'])
+        except:
+            link.append("N/A")
+        date.append(news.find('div' , {'class' : 'views-field views-field-created'}).text[8:-1])
+        title.append(news.find('span' , {'class' : 'circularsTab'}).text)
+        try:
+            translate.append(translator_a.translate(news.find('span' , {'class' : 'circularsTab'}).text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.find('span' , {'class' : 'circularsTab'}).text))
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":"印度文化部(Ministry of Culture, Government of India)", "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
+result = result.append(result1 , ignore_index=True)
+
+#馬來西亞國家文化與藝術局(Jabatan Kebudayaan dan Kesenian Negara)
+title, link, date, translate = [], [], [], []
+url = 'http://www.jkkn.gov.my/en/press-releases'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+time = (t.strftime('%b') + ' ' + str(int(t.strftime('%d'))-1) + ', ' + t.strftime('%Y'))
+
+for news in soup.findAll('div' , {'class' : 'views-row views-row-1 views-row-odd views-row-first list-rows-item'}):
+    if news.find('span' , {'class' : 'date'}).text == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'date'}).text)
+        title.append(news.h4.text)
+        try:
+            translate.append(translator_a.translate(news.h4.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.h4.text))
+for news in soup.findAll('div' , {'class' : 'views-row views-row-2 views-row-even list-rows-item'}):
+    if news.find('span' , {'class' : 'date'}).text == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'date'}).text)
+        title.append(news.h4.text)
+        try:
+            translate.append(translator_a.translate(news.h4.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.h4.text))
+for news in soup.findAll('div' , {'class' : 'views-row views-row-3 views-row-odd list-rows-item'}):
+    if news.find('span' , {'class' : 'date'}).text == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'date'}).text)
+        title.append(news.h4.text)
+        try:
+            translate.append(translator_a.translate(news.h4.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.h4.text))
+for news in soup.findAll('div' , {'class' : 'views-row views-row-4 views-row-even list-rows-item'}):
+    if news.find('span' , {'class' : 'date'}).text == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'date'}).text)
+        title.append(news.h4.text)
+        try:
+            translate.append(translator_a.translate(news.h4.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.h4.text))
+for news in soup.findAll('div' , {'class' : 'views-row views-row-5 views-row-odd list-rows-item'}):
+    if news.find('span' , {'class' : 'date'}).text == time:
+        link.append(news.a['href'])
+        date.append(news.find('span' , {'class' : 'date'}).text)
+        title.append(news.h4.text)
+        try:
+            translate.append(translator_a.translate(news.h4.text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.h4.text))
+            
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":"馬來西亞國家文化與藝術局(Jabatan Kebudayaan dan Kesenian Negara)", "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
+result = result.append(result1 , ignore_index=True)
+
+#香港特別行政區康樂及文化事務署
+title, link, date, translate =[], [], [], []
+if t.localtime()[1] < 10:
+    time = (str(t.localtime()[0]) + '-' + str(t.localtime()[1]) + '-' + '0' + str(t.localtime()[2]-1))
+    if (t.localtime()[2]-1) < 10:
+        time = (str(t.localtime()[0]) + '-' + '0' + str(t.localtime()[1]) + '-' + '0' + str(t.localtime()[2]-1))
+elif  t.localtime()[1] >= 10 and (t.localtime()[2]-1) < 10:
+    time = (str(t.localtime()[0]) + '-' + '0' + str(t.localtime()[1]) + '-' + str(t.localtime()[2]-1))
+else:
+    time = (str(t.localtime()[0]) + '-' + str(t.localtime()[1]) + '-' + str(t.localtime()[2]-1))
+
+url = 'https://www.lcsd.gov.hk/clpss/tc/webApp/News.do'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+body = soup.tbody
+for news in body.findAll('tr'):
+    if news.td.text == time:
+        link.append(news['href'])
+        date.append(news.td.text)
+        title.append(news.a.text[7:])
+        translate.append(news.a.text[7:])
+        
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":"香港特別行政區康樂及文化事務署", "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
+result = result.append(result1 , ignore_index=True)
+
 now = datetime.datetime.now()
 result.to_csv(f"{now.year}.{now.month}.{now.day - 1}.csv", encoding = "utf_8_sig", index = False)
