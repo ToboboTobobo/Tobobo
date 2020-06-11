@@ -1,0 +1,40 @@
+import pandas as pd
+from selenium import webdriver
+import requests
+from bs4 import BeautifulSoup
+import googletrans 
+import datetime
+import translate
+import time as t
+import calendar
+import json
+
+translator_a = googletrans.Translator()
+translator_b = translate.Translator(to_lang = "zh-tw")
+
+url = 'https://www.mkrf.ru/press/announcement/'
+re = requests.get(url)
+soup = BeautifulSoup(re.text, 'html.parser')
+
+month = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']
+month_num = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+day = ['1','2','3','4','5','6','7','8','9','10',
+       '11','12', '13','14','15','16','17','18','19','20',
+       '21','22', '23','24','25','26','27','28','29','30','31']
+yesterday = datetime.datetime.now() + datetime.timedelta(-2)
+time = str(day[yesterday.day-1]) + ' ' + str(month[yesterday.month-1])
+time_num = str(day[yesterday.day-1]) + ' ' + str(month_num[yesterday.month-1])
+
+title, link, translate, date = [], [], [], []
+for news in soup.find_all('a', class_ = 'b-news-list__item'):
+    print(news.find('div' , {'class' : 'b-article__date'}).text.lower() == time)
+    if news.find('div' , {'class' : 'b-article__date'}).text.lower() == time:
+        date.append(time_num)
+        title.append(news.find('div' , {'class' : 'b-default__title'}).text)
+        link.append('https://www.mkrf.ru' + news['href'])
+        try:
+            translate.append(translator_a.translate(news.find('div' , {'class' : 'b-default__title'}).text, dest = "zh-tw").text)
+        except:
+            translate.append(translator_b.translate(news.find('div' , {'class' : 'b-default__title'}).text))
+
+result1 = pd.DataFrame({"編號":"", "撰寫":"", "搜尋日期":"", "新聞日期":date, "地區別":"", "國家":"", "主題類別":"", "發佈機構/來源":"俄羅斯聯邦文化部", "標題翻譯":translate, "標題原文":title, "關鍵字":"", "負責人":"", "連結":link, "備註":""})
